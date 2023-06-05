@@ -1,0 +1,3 @@
+node_modules/
+fileStorage/*.json
+package-lock.json
