@@ -16,7 +16,7 @@ const SupportedMethods = {
 
 /**
  * Creates a generic Rest router
- * @param {typeName, removedMethods, joiPostSchema, joiPatchSchema} options 
+ * @param {typeName, removedMethods, uniqueFields, joiPostSchema, joiPatchSchema} options 
  * @returns Express Router with the described methods and validations
  */
 function createGenericRestRouter(options) {
@@ -33,8 +33,7 @@ function createGenericRestRouter(options) {
     }
 
     const router = Router();
-    // const storage = new InMemoryStorage(options.typeName);
-    const storage = new FileStorage(options.typeName);
+    const storage = new FileStorage({ typeName: options.typeName });
 
     ifMethodAllowed(SupportedMethods.GET_ALL, () => router.get('/', (req, res) => {
         storage.getAll()

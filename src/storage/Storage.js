@@ -1,8 +1,8 @@
 export default class Storage {
     typeName;
 
-    constructor(typeName) {
-        this.typeName = typeName;
+    constructor(options) {
+        this.typeName = options.typeName;
     }
 
     async getAll() {

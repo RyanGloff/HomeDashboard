@@ -6,8 +6,8 @@ export default class InMemoryStorage extends Storage {
     
     #data = {};
 
-    constructor (typeName) {
-        super(typeName);
+    constructor (options) {
+        super(options);
     }
 
     async getAll () {
@@ -23,7 +23,7 @@ export default class InMemoryStorage extends Storage {
 
     async create (id, data) {
         if (this.#data.hasOwnProperty(id)) {
-            throw new Conflict409Error(this.typeName, id);
+            throw new Conflict409Error(this.typeName, 'id', id);
         }
         data.id = id;
         this.#data[id] = data;

@@ -8,9 +8,9 @@ export default class FileStorage extends Storage {
 
     #fileName;
 
-    constructor (typeName) {
-        super(typeName);
-        this.#fileName = `fileStorage/${typeName}.json`;
+    constructor (options) {
+        super(options);
+        this.#fileName = `fileStorage/${options.typeName}.json`;
     }
 
     async #loadStorageFile () {
@@ -22,7 +22,6 @@ export default class FileStorage extends Storage {
     }
 
     async #saveToStorageFile (data) {
-        console.log(data);
         await fs.writeFileSync(this.#fileName, JSON.stringify(data));
     }
 
@@ -41,7 +40,7 @@ export default class FileStorage extends Storage {
     async create (id, data) {
         const all = await this.#loadStorageFile();
         if (all.hasOwnProperty(id)) {
-            throw new Conflict409Error(this.typeName, id);
+            throw new Conflict409Error(this.typeName, 'id', id);
         }
         data.id = id;
         all[id] = data;
