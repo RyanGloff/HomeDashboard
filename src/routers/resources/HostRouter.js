@@ -12,7 +12,7 @@ const joiPatchSchema = Joi.object({
 });
 
 const router = GenericRestRouter.createGenericRestRouter({
-    typeName: 'devices',
+    typeName: 'host',
     joiPostSchema,
     joiPatchSchema
 });

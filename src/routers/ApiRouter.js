@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import DeviceRouter from './resources/DeviceRouter.js';
+import HostRouter from './resources/HostRouter.js';
 import PendingActionRouter from './resources/PendingActionRouter.js'
 
 const router = Router();
 
-router.use('/devices', DeviceRouter);
+router.use('/hosts', HostRouter);
 router.use('/pending-actions', PendingActionRouter);
 
 export default router;
