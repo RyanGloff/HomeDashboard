@@ -3,6 +3,8 @@ import { v4 } from 'uuid';
 import FileStorage from '../storage/FileStorage.js';
 import BadRequest400Error from './returns/BadRequest400Error.js';
 import errorHandler from './middleware/ErrorHandler.js';
+import Schemas from './Schemas.js';
+import RouterConfigs from './RouterConfigs.js';
 
 const SupportedMethods = {
     GET_BY_ID: 1,
@@ -15,24 +17,23 @@ const SupportedMethods = {
 
 /**
  * Creates a generic Rest router
- * @param {typeName, removedMethods, uniqueFields, joiPostSchema, joiPatchSchema} options 
+ * @param {typeName, removedMethods, joiPostSchema, joiPatchSchema} options 
  * @returns Express Router with the described methods and validations
  */
-function createGenericRestRouter(options) {
-    if (options === undefined
-        || !options.hasOwnProperty('typeName')) {
-            throw new Error('createGenericRestRouter options requires typeName and allowedMethods');
+function createGenericRestRouter(typeName) {
+    if (!typeName) {
+        throw new Error('createGenericRestRouter requires typeName');
     }
-
+    const config = RouterConfigs[typeName] || {};
     
     function ifMethodAllowed(method, createEndpointFn) {
-        if (!options.hasOwnProperty('removedMethods') || options.removedMethods.indexOf(method) < 0) {
+        if (!config.hasOwnProperty('removedEndpoints') || config.removedEndpoints.indexOf(method) < 0) {
             createEndpointFn();
         }
     }
 
     const router = Router();
-    const storage = new FileStorage({ typeName: options.typeName });
+    const storage = new FileStorage({ typeName });
 
     ifMethodAllowed(SupportedMethods.GET_ALL, () => router.get('/', (req, res) => {
         storage.getAll()
@@ -47,8 +48,8 @@ function createGenericRestRouter(options) {
     }));
 
     ifMethodAllowed(SupportedMethods.POST, () => router.post('/', (req, res) => {
-        if (options.hasOwnProperty('joiPostSchema')) {
-            const validation = options.joiPostSchema.validate(req.body);
+        if (Schemas.hasOwnProperty(typeName) && Schemas[typeName].hasOwnProperty('post')) {
+            const validation = Schemas[typeName].post.validate(req.body);
             if (validation.hasOwnProperty('error')) throw new BadRequest400Error(validation.error);
         }
         
@@ -59,8 +60,8 @@ function createGenericRestRouter(options) {
     }));
 
     ifMethodAllowed(SupportedMethods.PATCH, () => router.patch('/:id', (req, res) => {
-        if (options.hasOwnProperty('joiPatchSchema')) {
-            const validation = options.joiPatchSchema.validate(req.body);
+        if (Schemas.hasOwnProperty(typeName) && Schemas[typeName].hasOwnProperty('patch')) {
+            const validation = Schemas[typeName].patch.validate(req.body);
             if (validation.hasOwnProperty('error')) throw new BadRequest400Error(validation.error);
         }
 

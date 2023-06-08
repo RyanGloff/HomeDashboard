@@ -1,10 +1,9 @@
 import { Router } from 'express';
-import HostRouter from './resources/HostRouter.js';
-import PendingActionRouter from './resources/PendingActionRouter.js'
+import GenericRestRouter from './GenericRestRouter.js';
 
 const router = Router();
 
-router.use('/hosts', HostRouter);
-router.use('/pending-actions', PendingActionRouter);
+router.use('/hosts', GenericRestRouter.createGenericRestRouter('host'));
+router.use('/pending-actions', GenericRestRouter.createGenericRestRouter('pending-action'));
 
 export default router;
