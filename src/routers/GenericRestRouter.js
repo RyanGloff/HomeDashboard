@@ -56,7 +56,7 @@ function createGenericRestRouter(options) {
         const newId = v4();
         storage.create(newId, req.body)
             .then(v => res.json(v))
-            // .catch(err => errorHandler(err, req, res));
+            .catch(err => errorHandler(err, req, res));
     }));
 
     ifMethodAllowed(SupportedMethods.PATCH, () => router.patch('/:id', (req, res) => {
