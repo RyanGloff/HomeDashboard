@@ -47,16 +47,57 @@ function createGenericRestRouter(typeName) {
             .catch(err => errorHandler(err, req, res));
     }));
 
-    ifMethodAllowed(SupportedMethods.POST, () => router.post('/', (req, res) => {
-        if (Schemas.hasOwnProperty(typeName) && Schemas[typeName].hasOwnProperty('post')) {
-            const validation = Schemas[typeName].post.validate(req.body);
-            if (validation.hasOwnProperty('error')) throw new BadRequest400Error(validation.error);
+    // Collections
+    ifMethodAllowed(SupportedMethods.GET_BY_ID, () => {
+        if (config.hasOwnProperty('collections')) {
+            Object.keys(config.collections).forEach(key => {
+                const collection = config.collections[key];
+                router.get(`/:id/${key}`, (req, res) => {
+                    storage.getById(req.params.id)
+                        .then(parent => {
+                            const collectionStorage = new FileStorage({ typeName: collection.foreignType });
+                            collectionStorage.getAll()
+                                .then(all => {
+                                    Object.keys(all).forEach(key => {
+                                        const v = all[key];
+                                        if (v[collection.fkey] !== parent[collection.localKey])
+                                            delete all[key];
+                                    });
+                                    return all;
+                                })
+                                .then(children => res.json({ children }))
+                                .catch(err => errorHandler(err, req, res));
+                        })
+                        .catch(err => errorHandler(err, req, res));
+                });
+            });
         }
-        
-        const newId = v4();
-        storage.create(newId, req.body)
-            .then(v => res.json(v))
-            .catch(err => errorHandler(err, req, res));
+    });
+
+    ifMethodAllowed(SupportedMethods.POST, () => router.post('/', (req, res) => {
+        const storeEntity = () => {
+            const newId = v4();
+            storage.create(newId, req.body)
+                .then(v => res.json(v))
+                .catch(err => errorHandler(err, req, res));
+        };
+
+        if (Schemas.hasOwnProperty(typeName)) {
+            if (Schemas[typeName].hasOwnProperty('post')) {
+                const validation = Schemas[typeName].post.validate(req.body);
+                if (validation.hasOwnProperty('error')) throw new BadRequest400Error(validation.error);
+            }
+            if (Schemas[typeName].hasOwnProperty('fkeys')) {
+                Schemas[typeName].fkeys.forEach(fkeyConfig => {
+                    const foreignStorage = new FileStorage({ typeName: fkeyConfig.foreignType });
+                    foreignStorage.getById(req.body[fkeyConfig.localKey])
+                        .then(foreignEntity => storeEntity())
+                        .catch(err => errorHandler(err, req, res));
+                });
+            } else {
+                storeEntity();
+            }
+        }
     }));
 
     ifMethodAllowed(SupportedMethods.PATCH, () => router.patch('/:id', (req, res) => {
