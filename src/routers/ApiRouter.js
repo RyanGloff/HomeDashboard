@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import GenericRestRouter from './GenericRestRouter.js';
+import RouterConfigs from './RouterConfigs.js';
 
 const router = Router();
 
-router.use('/hosts', GenericRestRouter.createGenericRestRouter('host'));
-router.use('/controllers', GenericRestRouter.createGenericRestRouter('controller'));
-router.use('/pending-actions', GenericRestRouter.createGenericRestRouter('pending-action'));
+Object.keys(RouterConfigs)
+    .forEach(endpoint => router.use(`/${endpoint}`, GenericRestRouter.createGenericRestRouter(endpoint)));
 
 export default router;

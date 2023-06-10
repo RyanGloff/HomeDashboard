@@ -2,14 +2,12 @@ import Joi from 'joi';
 
 // Controllers
 const controllerPostSchema = Joi.object({
-    hostId: Joi.string().required(),   // TODO: Add fkey to hosts (possible custom validator required)
-    name: Joi.string().required(),
-    // TODO: Capabilities
+    hostId: Joi.string().required(),
+    name: Joi.string().required()
 });
 
 const controllerPatchSchema = Joi.object({
     name: Joi.string()
-    // TODO: add/remove capabilities?
 });
 
 // Host
