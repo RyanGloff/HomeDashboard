@@ -1,0 +1,18 @@
+.host-card-view {
+    background: white;
+    text-align: center;
+    display: inline-block;
+    padding: 1rem;
+}
+.host-card-view h3 {
+    margin: 0;
+}
+
+.host-card-view .controller {
+    border: 1px solid black;
+    margin: .125rem;
+}
+
+div[hidden] {
+    display: none;
+}

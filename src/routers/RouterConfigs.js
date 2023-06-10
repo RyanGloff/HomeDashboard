@@ -1,6 +1,9 @@
 const RouterConfigs = {
-    "controller": {},
+    "controller": {
+        plural: "controllers"
+    },
     "host": {
+        plural: "hosts",
         collections: {
             "controllers": {
                 foreignType: "controller",
@@ -11,6 +14,7 @@ const RouterConfigs = {
         }
     },
     "pending-action": {
+        plural: "pending-actions",
         "removedEndpoints": [ "PATCH", "PUT" ]
     }
 }
