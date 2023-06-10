@@ -24,8 +24,8 @@ const hostPatchSchema = Joi.object({
 // PendingAction
 const pendingActionPostSchema = Joi.object({
     type: Joi.valid('ChangeState').required(),
-    host: Joi.string().required(),
-    controller: Joi.string().required(),
+    hostId: Joi.string().required(),
+    controllerId: Joi.string().required(),
     additionalData: Joi.string()
 });
 
@@ -42,6 +42,10 @@ export default {
         patch: hostPatchSchema
     },
     "pending-action": {
-        post: pendingActionPostSchema
+        post: pendingActionPostSchema,
+        fkeys: [
+            { foreignType: 'host', fkey: 'id', localKey: 'hostId' },
+            { foreignType: 'controller', fkey: 'id', localkey: 'controllerId' }
+        ]
     }
 };
