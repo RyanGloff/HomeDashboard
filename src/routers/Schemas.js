@@ -24,7 +24,8 @@ const hostPatchSchema = Joi.object({
 // PendingAction
 const pendingActionPostSchema = Joi.object({
     type: Joi.valid('ChangeState').required(),
-    device: Joi.string().required(),
+    host: Joi.string().required(),
+    controller: Joi.string().required(),
     additionalData: Joi.string()
 });
 
